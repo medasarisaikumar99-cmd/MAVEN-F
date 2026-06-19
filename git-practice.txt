@@ -1,0 +1,5 @@
+Git Status
+Git Add
+Git Commit
+Git Push
+
