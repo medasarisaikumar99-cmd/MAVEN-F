@@ -5,7 +5,7 @@ on:
     branches: [AWS-Infrastructure]
 
 env:
-  AWS_REGION: us-east-1              
+  AWS_REGION: us-east-1
   ECR_REPOSITORY: simple-java-maven-app
 
 jobs:
@@ -19,13 +19,11 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push image to ECR
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-            ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+        run: |
+          IMAGE=${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
+          docker build -t "$IMAGE:${{ github.sha }}" -t "$IMAGE:latest" .
+          docker push "$IMAGE:${{ github.sha }}"
+          docker push "$IMAGE:latest"
 
       - name: Deploy from ECR and verify the app runs
         run: |
